@@ -8,13 +8,14 @@ main =
   StartApp.start { model = model, view = view, update = update }
 
 
-model = ""
+model : Int
+model = 900
 
 
 view address model =
   div []
     [ h1 [] [ text "Poker Clock" ]
-    , h2 [] [ text "00:00" ]
+    , h2 [] [ text (formatSeconds model) ]
     , button [] [ text "Play" ]
     , button [] [ text "Pause" ]
     ]
@@ -22,3 +23,8 @@ view address model =
 
 update action model =
   model
+
+
+formatSeconds : Int -> String
+formatSeconds seconds =
+  toString seconds
