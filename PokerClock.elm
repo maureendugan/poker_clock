@@ -1,6 +1,13 @@
 module PokerClock where
 
-import Html
+import Html exposing (..)
 
+
+main : Html
 main =
-  Html.text "Hello World!"
+  div []
+    [ h1 [] [text "Poker Clock"]
+    , h2 [] [text "00:00"]
+    , button [] [text "Play"]
+    , button [] [text "Pause"]
+    ]
