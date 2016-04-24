@@ -34,7 +34,6 @@ view address model =
 update : Action -> Model -> ( Model, Effects.Effects a )
 update action model =
   case action of
-    Noop -> ( model, Effects.none )
     Decrement -> ( model - 1, Effects.none )
 
 
@@ -48,6 +47,6 @@ inputs =
   [ Signal.map (always Decrement) (every second) ]
 
 
-type Action = Decrement | Noop
+type Action = Decrement
 
 type alias Model = Int
