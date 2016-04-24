@@ -45,12 +45,7 @@ formatSeconds seconds =
 
 inputs : List (Signal Action)
 inputs =
-  [ Signal.map countdown (every second) ]
-
-
-countdown : a -> Action
-countdown _ =
-  Decrement
+  [ Signal.map (always Decrement) (every second) ]
 
 
 type Action = Decrement | Noop
