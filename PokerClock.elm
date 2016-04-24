@@ -50,3 +50,8 @@ inputs =
 type Action = Decrement
 
 type alias Model = Int
+
+-- To Dos: 
+-- 1) Add logic to handle model = 0; It should make a noise, hold at zero
+-- 2) Implement restart/refresh button
+-- 3) Implement pause
