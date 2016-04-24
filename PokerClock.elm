@@ -31,8 +31,11 @@ view address model =
     ]
 
 
+update : Action -> Model -> ( Model, Effects.Effects a )
 update action model =
-  ( model, Effects.none )
+  case action of
+    Noop -> ( model, Effects.none )
+    Decrement -> ( model - 1, Effects.none )
 
 
 formatSeconds : Int -> String
@@ -51,3 +54,5 @@ countdown _ =
 
 
 type Action = Decrement | Noop
+
+type alias Model = Int
