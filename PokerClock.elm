@@ -1,11 +1,20 @@
 module PokerClock where
 
+import Effects
 import Html exposing (..)
-import StartApp.Simple as StartApp
+import StartApp
+
+
+app =
+  StartApp.start { init = init, view = view, update = update, inputs = [] }
 
 
 main =
-  StartApp.start { model = model, view = view, update = update }
+  app.html
+
+
+init =
+  ( model, Effects.none )
 
 
 model : Int
@@ -22,7 +31,7 @@ view address model =
 
 
 update action model =
-  model
+  ( model, Effects.none )
 
 
 formatSeconds : Int -> String
