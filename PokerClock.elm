@@ -16,17 +16,20 @@ main =
 
 
 init =
-  ( model, Effects.none )
+  ( initialModel, Effects.none )
 
 
-model : Int
-model = 900
+type alias Model = { counter : Int }
+
+initialModel : Model
+initialModel =
+  { counter = 900 }
 
 
 view address model =
   div []
     [ h1 [] [ text "Poker Clock" ]
-    , h2 [] [ text (formatSeconds model) ]
+    , h2 [] [ text (formatSeconds model.counter) ]
     , button [] [ text "Play" ]
     , button [] [ text "Pause" ]
     ]
@@ -35,7 +38,7 @@ view address model =
 update : Action -> Model -> ( Model, Effects.Effects a )
 update action model =
   case action of
-    Decrement -> ( model - 1, Effects.none )
+    Decrement -> ( { model | counter = model.counter - 1 }, Effects.none )
 
 
 formatSeconds : Int -> String
@@ -49,7 +52,6 @@ formatSeconds seconds =
 
     secondsWithZeroPadding =
       String.padLeft 2 '0' secondsWithoutZeroPadding
-
   in
     minutes ++ ":" ++ secondsWithZeroPadding
 
@@ -60,8 +62,6 @@ inputs =
 
 
 type Action = Decrement
-
-type alias Model = Int
 
 -- To Dos: 
 -- 1) Add logic to handle model = 0; It should make a noise, hold at zero
