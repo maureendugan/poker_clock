@@ -2,6 +2,7 @@ module PokerClock where
 
 import Effects
 import Html exposing (..)
+import Html.Events exposing (..)
 import StartApp
 import String
 import Time exposing ( every, second )
@@ -19,26 +20,39 @@ init =
   ( initialModel, Effects.none )
 
 
-type alias Model = { counter : Int }
+type alias Model = { counter : Int, isPaused : Bool }
 
 initialModel : Model
 initialModel =
-  { counter = 900 }
+  { counter = 900
+  , isPaused = True
+  }
 
 
 view address model =
   div []
     [ h1 [] [ text "Poker Clock" ]
     , h2 [] [ text (formatSeconds model.counter) ]
-    , button [] [ text "Play" ]
-    , button [] [ text "Pause" ]
+    , button [ onClick address Toggle ]
+      [ text (if model.isPaused then "Play" else "Pause") ]
     ]
 
 
 update : Action -> Model -> ( Model, Effects.Effects a )
 update action model =
-  case action of
-    Decrement -> ( { model | counter = model.counter - 1 }, Effects.none )
+  let
+    updatedModel =
+      case action of
+        Decrement ->
+          if model.isPaused
+            then model
+            else { model | counter = model.counter - 1 }
+
+        Toggle ->
+          { model | isPaused = not model.isPaused }
+
+  in
+    ( updatedModel, Effects.none )
 
 
 formatSeconds : Int -> String
@@ -61,7 +75,7 @@ inputs =
   [ Signal.map (always Decrement) (every second) ]
 
 
-type Action = Decrement
+type Action = Decrement | Toggle
 
 -- To Dos: 
 -- 1) Add logic to handle model = 0; It should make a noise, hold at zero
