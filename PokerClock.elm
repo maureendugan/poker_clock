@@ -3,6 +3,7 @@ module PokerClock where
 import Effects
 import Html exposing (..)
 import StartApp
+import String
 import Time exposing ( every, second )
 
 
@@ -39,7 +40,18 @@ update action model =
 
 formatSeconds : Int -> String
 formatSeconds seconds =
-  toString seconds
+  let
+    minutes =
+      toString <| seconds // 60
+
+    secondsWithoutZeroPadding =
+      toString <| seconds % 60
+
+    secondsWithZeroPadding =
+      String.padLeft 2 '0' secondsWithoutZeroPadding
+
+  in
+    minutes ++ ":" ++ secondsWithZeroPadding
 
 
 inputs : List (Signal Action)
