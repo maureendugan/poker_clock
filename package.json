@@ -1,0 +1,8 @@
+{
+  "name": "poker_clock",
+  "version": "0.0.1",
+  "dependencies": {
+    "elm": "0.16.0",
+    "elm-test": "0.16.1-alpha4"
+  }
+}
