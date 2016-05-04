@@ -3,6 +3,16 @@
 <script src="PokerClock.js"></script>
 <script>
 var div = document.getElementById('poker_clock');
-Elm.embed(Elm.PokerClock, div);
+var app = Elm.embed(Elm.PokerClock, div);
+
+app.ports.playBeep.subscribe(function(shouldPlay) {
+  if (shouldPlay) {
+    document.getElementById('times-up').play();
+  } else {
+    document.getElementById('times-up').stop();
+  }
+});
 
 </script>
+
+<audio id="times-up" src="beep.mp3"></audio>
