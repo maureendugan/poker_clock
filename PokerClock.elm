@@ -7,35 +7,19 @@ import Task exposing (Task)
 import Time exposing ( every, second )
 
 
-app : StartApp.App Model
-app =
-  StartApp.start { init = init, view = view, update = update, inputs = inputs }
+---- MODEL ----
 
-
-port tasks : Signal (Task Effects.Never ())
-port tasks = app.tasks
-
-
-main : Signal Html
-main =
-  app.html
+type alias Model = Int
 
 
 init : ( Model, Effects Action )
 init =
-  ( model, Effects.none )
+  ( 900, Effects.none )
 
 
-model : Int
-model = 900
+---- UPDATE ----
 
-
-view : Signal.Address Action -> Model -> Html
-view address model =
-  div []
-    [ h1 [] [ text "Poker Clock" ]
-    , h2 [] [ text (formatSeconds model) ]
-    ]
+type Action = Tick | Noop
 
 
 update : Action -> Model -> ( Model, Effects Action )
@@ -52,21 +36,30 @@ update action model =
       Noop -> ( model, Effects.none )
 
 
+---- VIEW ----
+
+view : Signal.Address Action -> Model -> Html
+view address model =
+  div []
+    [ h1 [] [ text "Poker Clock" ]
+    , h2 [] [ text (formatSeconds model) ]
+    ]
+
+
 formatSeconds : Int -> String
 formatSeconds seconds =
   toString seconds
 
+
+---- INPUTS ----
 
 inputs : List (Signal Action)
 inputs =
   [ Signal.map (always Tick) (every second) ]
 
 
-type Action = Tick | Noop
 
-
-type alias Model = Int
-
+---- OUTPUTS ----
 
 port playBeep : Signal Bool
 port playBeep =
@@ -86,4 +79,20 @@ playBeepTask =
 playBeepEffect : Effects Action
 playBeepEffect =
   Effects.map (always Noop) (Effects.task playBeepTask)
+
+
+---- APP ----
+
+app : StartApp.App Model
+app =
+  StartApp.start { init = init, view = view, update = update, inputs = inputs }
+
+
+main : Signal Html
+main =
+  app.html
+
+
+port tasks : Signal (Task Effects.Never ())
+port tasks = app.tasks
 
