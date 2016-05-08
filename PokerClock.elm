@@ -35,9 +35,14 @@ update action model =
         then playBeepEffect
         else Effects.none
 
+    decrementWhenNotPaused =
+      if model.isPaused
+        then model
+        else
+          { model | seconds = clamp 0 900 (model.seconds - 1) }
   in
     case action of
-      Tick -> ( if model.isPaused then model else { model | seconds = clamp 0 900 (model.seconds - 1) }, playBeepIfZero )
+      Tick -> ( decrementWhenNotPaused , playBeepIfZero )
       Noop -> ( model, Effects.none )
       PauseTime -> ( { model | isPaused = True } , Effects.none )
 
@@ -106,4 +111,3 @@ main =
 
 port tasks : Signal (Task Effects.Never ())
 port tasks = app.tasks
-
