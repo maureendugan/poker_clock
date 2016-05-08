@@ -31,8 +31,6 @@ view address model =
   div []
     [ h1 [] [ text "Poker Clock" ]
     , h2 [] [ text (formatSeconds model) ]
-    -- , button [] [ text "Play" ]
-    -- , button [] [ text "Pause" ]
     ]
 
 
@@ -85,7 +83,3 @@ playBeepEffect : Effects.Effects Action
 playBeepEffect =
   Effects.map (always Noop) (Effects.task playBeepTask)
 
--- To Dos:
--- 1) Add logic to handle model = 0; It should make a noise, hold at zero
--- 2) Implement restart/refresh button
--- 3) Implement pause
