@@ -1,6 +1,6 @@
 module PokerClock where
 
-import Effects
+import Effects exposing (Effects)
 import Html exposing (..)
 import StartApp
 import Task exposing (Task)
@@ -34,7 +34,7 @@ view address model =
     ]
 
 
-update : Action -> Model -> ( Model, Effects.Effects Action )
+update : Action -> Model -> ( Model, Effects Action )
 update action model =
   let
     playBeepIfZero =
@@ -79,7 +79,7 @@ playBeepTask =
   Signal.send playBeepMailbox.address True
 
 
-playBeepEffect : Effects.Effects Action
+playBeepEffect : Effects Action
 playBeepEffect =
   Effects.map (always Noop) (Effects.task playBeepTask)
 
