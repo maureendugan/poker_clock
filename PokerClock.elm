@@ -1,32 +1,30 @@
 module PokerClock where
 
-import Effects
+import Effects exposing (Effects)
 import Html exposing (..)
 import StartApp
 import Task exposing (Task)
 import Time exposing ( every, second )
 
 
-app =
-  StartApp.start { init = init, view = view, update = update, inputs = inputs }
+-- Model
+
+type alias Model = Int
 
 
-port tasks : Signal (Task Effects.Never ())
-port tasks = app.tasks
+model : Model
+model =
+  900
 
 
-main =
-  app.html
-
-
+init : ( Model, Effects Action )
 init =
   ( model, Effects.none )
 
 
-model : Int
-model = 900
+-- View
 
-
+view : Signal.Address Action -> Model -> Html
 view address model =
   div []
     [ h1 [] [ text "Poker Clock" ]
@@ -36,38 +34,49 @@ view address model =
     ]
 
 
-update : Action -> Model -> ( Model, Effects.Effects Action )
-update action model =
-  let
-    playBeepIfZero =
-      if model - 1 == 0
-        then playBeepEffect
-        else Effects.none
-
-  in
-    case action of
-      Tick -> ( clamp 0 900 (model - 1), playBeepIfZero )
-      Noop -> ( model, Effects.none )
-
-
 formatSeconds : Int -> String
 formatSeconds seconds =
   toString seconds
 
 
-inputs : List (Signal Action)
-inputs =
-  [ Signal.map (always Tick) (every second) ]
-
+-- Update
 
 type Action = Tick | Noop
 
 
-type alias Model = Int
+update : Action -> Model -> ( Model, Effects Action )
+update action model =
+  let
+    updatedModel =
+      clamp 0 900 (model - 1)
+
+  in
+    case action of
+      Tick -> ( updatedModel, playBeepIf <| updatedModel == 0 )
+      Noop -> ( model, Effects.none )
 
 
-port playBeep : Signal Bool
-port playBeep =
+-- Effects
+
+playBeepIf : Bool -> Effects Action
+playBeepIf condition =
+  let
+    playBeepTask : Task x ()
+    playBeepTask =
+      Signal.send playBeepMailbox.address True
+
+    playBeepEffect : Effects Action
+    playBeepEffect =
+      Effects.map (always Noop) (Effects.task playBeepTask)
+
+  in
+    if condition
+      then playBeepEffect
+      else Effects.none
+
+
+playBeepSignal : Signal Bool
+playBeepSignal =
   playBeepMailbox.signal
 
 
@@ -76,16 +85,22 @@ playBeepMailbox =
   Signal.mailbox False
 
 
-playBeepTask : Task x ()
-playBeepTask =
-  Signal.send playBeepMailbox.address True
+-- StartApp
+
+app : StartApp.App Model
+app =
+  StartApp.start { init = init, view = view, update = update, inputs = inputs }
 
 
-playBeepEffect : Effects.Effects Action
-playBeepEffect =
-  Effects.map (always Noop) (Effects.task playBeepTask)
+inputs : List (Signal Action)
+inputs =
+  [ Signal.map (always Tick) (every second) ]
 
--- To Dos:
--- 1) Add logic to handle model = 0; It should make a noise, hold at zero
--- 2) Implement restart/refresh button
--- 3) Implement pause
+
+tasks : Signal (Task Effects.Never ())
+tasks = app.tasks
+
+
+html : Signal Html
+html = app.html
+

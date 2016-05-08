@@ -1,2 +1,2 @@
 default:
-	elm make PokerClock.elm --output public/PokerClock.js
+	elm make Main.elm --output public/PokerClock.js

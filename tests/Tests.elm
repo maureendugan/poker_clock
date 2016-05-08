@@ -1,5 +1,6 @@
 module Tests where
 
+import Effects
 import ElmTest exposing (..)
 import PokerClock
 import String
@@ -8,14 +9,7 @@ import String
 all : Test
 all =
   suite "A Test Suite"
-    [ test "Addition" <|
-      assertEqual (3 + 7) 10
-
-    , test "String.left" <|
-      assertEqual "a" <| String.left 1 "abcdefg"
-
-    , test "This test should fail" <|
-      assert True
-
+    [ test "formatSections" <|
+      assertEqual "900" <| PokerClock.formatSeconds 900
     ]
 
