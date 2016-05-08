@@ -2,6 +2,7 @@ module PokerClock where
 
 import Effects exposing (Effects)
 import Html exposing (..)
+import Html.Events exposing (onClick)
 import StartApp
 import String exposing (padLeft)
 import Task exposing (Task)
@@ -10,31 +11,35 @@ import Time exposing ( every, second )
 
 ---- MODEL ----
 
-type alias Model = Int
+type alias Model =
+  { seconds : Int
+  , isPaused : Bool
+  }
 
 
-init : ( Model, Effects Action )
+init :  ( Model, Effects Action )
 init =
-  ( 900, Effects.none )
+  ( Model 900 False, Effects.none )
 
 
 ---- UPDATE ----
 
-type Action = Tick | Noop
+type Action = Tick | Noop | PauseTime
 
 
 update : Action -> Model -> ( Model, Effects Action )
 update action model =
   let
     playBeepIfZero =
-      if model - 1 == 0
+      if model.seconds - 1 == 0
         then playBeepEffect
         else Effects.none
 
   in
     case action of
-      Tick -> ( clamp 0 900 (model - 1), playBeepIfZero )
+      Tick -> ( if model.isPaused then model else { model | seconds = clamp 0 900 (model.seconds - 1) }, playBeepIfZero )
       Noop -> ( model, Effects.none )
+      PauseTime -> ( { model | isPaused = True } , Effects.none )
 
 
 ---- VIEW ----
@@ -43,7 +48,8 @@ view : Signal.Address Action -> Model -> Html
 view address model =
   div []
     [ h1 [] [ text "Poker Clock" ]
-    , h2 [] [ text (formatTime model) ]
+    , h2 [] [ text (formatTime model.seconds) ]
+    , button [ onClick address PauseTime ] [ text "Pause" ]
     ]
 
 
