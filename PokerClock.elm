@@ -7,6 +7,7 @@ import Task exposing (Task)
 import Time exposing ( every, second )
 
 
+app : StartApp.App Model
 app =
   StartApp.start { init = init, view = view, update = update, inputs = inputs }
 
@@ -15,10 +16,12 @@ port tasks : Signal (Task Effects.Never ())
 port tasks = app.tasks
 
 
+main : Signal Html
 main =
   app.html
 
 
+init : ( Model, Effects Action )
 init =
   ( model, Effects.none )
 
@@ -27,6 +30,7 @@ model : Int
 model = 900
 
 
+view : Signal.Address Action -> Model -> Html
 view address model =
   div []
     [ h1 [] [ text "Poker Clock" ]
