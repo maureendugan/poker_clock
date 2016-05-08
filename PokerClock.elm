@@ -1,42 +1,28 @@
 module PokerClock where
 
-import Effects
+import Effects exposing (Effects)
 import Html exposing (..)
 import StartApp
 import Task exposing (Task)
 import Time exposing ( every, second )
 
 
-app =
-  StartApp.start { init = init, view = view, update = update, inputs = inputs }
+---- MODEL ----
+
+type alias Model = Int
 
 
-port tasks : Signal (Task Effects.Never ())
-port tasks = app.tasks
-
-
-main =
-  app.html
-
-
+init : ( Model, Effects Action )
 init =
-  ( model, Effects.none )
+  ( 900, Effects.none )
 
 
-model : Int
-model = 900
+---- UPDATE ----
+
+type Action = Tick | Noop
 
 
-view address model =
-  div []
-    [ h1 [] [ text "Poker Clock" ]
-    , h2 [] [ text (formatSeconds model) ]
-    -- , button [] [ text "Play" ]
-    -- , button [] [ text "Pause" ]
-    ]
-
-
-update : Action -> Model -> ( Model, Effects.Effects Action )
+update : Action -> Model -> ( Model, Effects Action )
 update action model =
   let
     playBeepIfZero =
@@ -50,21 +36,30 @@ update action model =
       Noop -> ( model, Effects.none )
 
 
+---- VIEW ----
+
+view : Signal.Address Action -> Model -> Html
+view address model =
+  div []
+    [ h1 [] [ text "Poker Clock" ]
+    , h2 [] [ text (formatSeconds model) ]
+    ]
+
+
 formatSeconds : Int -> String
 formatSeconds seconds =
   toString seconds
 
+
+---- INPUTS ----
 
 inputs : List (Signal Action)
 inputs =
   [ Signal.map (always Tick) (every second) ]
 
 
-type Action = Tick | Noop
 
-
-type alias Model = Int
-
+---- OUTPUTS ----
 
 port playBeep : Signal Bool
 port playBeep =
@@ -81,11 +76,23 @@ playBeepTask =
   Signal.send playBeepMailbox.address True
 
 
-playBeepEffect : Effects.Effects Action
+playBeepEffect : Effects Action
 playBeepEffect =
   Effects.map (always Noop) (Effects.task playBeepTask)
 
--- To Dos:
--- 1) Add logic to handle model = 0; It should make a noise, hold at zero
--- 2) Implement restart/refresh button
--- 3) Implement pause
+
+---- APP ----
+
+app : StartApp.App Model
+app =
+  StartApp.start { init = init, view = view, update = update, inputs = inputs }
+
+
+main : Signal Html
+main =
+  app.html
+
+
+port tasks : Signal (Task Effects.Never ())
+port tasks = app.tasks
+
