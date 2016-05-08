@@ -17,14 +17,14 @@ type alias Model =
   }
 
 
-init :  ( Model, Effects Action )
+init : ( Model, Effects Action )
 init =
   ( Model 900 False, Effects.none )
 
 
 ---- UPDATE ----
 
-type Action = Tick | Noop | PauseTime
+type Action = Tick | Noop | TogglePause
 
 
 update : Action -> Model -> ( Model, Effects Action )
@@ -44,7 +44,7 @@ update action model =
     case action of
       Tick -> ( decrementWhenNotPaused , playBeepIfZero )
       Noop -> ( model, Effects.none )
-      PauseTime -> ( { model | isPaused = True } , Effects.none )
+      TogglePause -> ( { model | isPaused = not model.isPaused } , Effects.none )
 
 
 ---- VIEW ----
@@ -54,7 +54,7 @@ view address model =
   div []
     [ h1 [] [ text "Poker Clock" ]
     , h2 [] [ text (formatTime model.seconds) ]
-    , button [ onClick address PauseTime ] [ text "Pause" ]
+    , button [ onClick address TogglePause ] [ text <| if model.isPaused then "Play" else "Pause" ]
     ]
 
 
