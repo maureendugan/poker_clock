@@ -3,6 +3,7 @@ module PokerClock where
 import Effects exposing (Effects)
 import Html exposing (..)
 import StartApp
+import String exposing (padLeft)
 import Task exposing (Task)
 import Time exposing ( every, second )
 
@@ -42,13 +43,17 @@ view : Signal.Address Action -> Model -> Html
 view address model =
   div []
     [ h1 [] [ text "Poker Clock" ]
-    , h2 [] [ text (formatSeconds model) ]
+    , h2 [] [ text (formatTime model) ]
     ]
 
 
-formatSeconds : Int -> String
-formatSeconds seconds =
-  toString seconds
+formatTime : Int -> String
+formatTime seconds =
+  let
+    min = toString <| seconds // 60
+    sec = padLeft 2 '0' <| toString <| seconds % 60
+  in
+    min ++ ":" ++ sec
 
 
 ---- INPUTS ----
