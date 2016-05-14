@@ -1,0 +1,6 @@
+{
+  "dependencies": {
+    "elm": "0.16.0",
+    "firebase-tools": "2.2.1"
+  }
+}
