@@ -1,5 +1,5 @@
 default:
-	bin/elm-make PokerClock.elm --output public/PokerClock.js
+	bin/elm-make PokerClock.elm --yes --output public/PokerClock.js
 
 deploy:
 	bin/firebase deploy

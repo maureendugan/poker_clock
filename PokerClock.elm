@@ -1,9 +1,8 @@
-module PokerClock where
+port module PokerClock exposing (..)
 
-import Effects exposing (Effects)
 import Html exposing (..)
 import Html.Events exposing (onClick)
-import StartApp
+import Html.App as Html
 import String exposing (padLeft)
 import Task exposing (Task)
 import Time exposing ( every, second )
@@ -17,23 +16,23 @@ type alias Model =
   }
 
 
-init : ( Model, Effects Action )
+init : ( Model, Cmd Message )
 init =
-  ( Model 900 False, Effects.none )
+  ( Model 900 False, Cmd.none )
 
 
 ---- UPDATE ----
 
-type Action = Tick | Noop | TogglePause
+type Message = Tick | Noop | TogglePause
 
 
-update : Action -> Model -> ( Model, Effects Action )
-update action model =
+update : Message -> Model -> ( Model, Cmd Message )
+update message model =
   let
     playBeepIfZero =
       if model.seconds - 1 == 0
-        then playBeepEffect
-        else Effects.none
+        then playBeep True
+        else Cmd.none
 
     decrementWhenNotPaused =
       if model.isPaused
@@ -41,20 +40,20 @@ update action model =
         else
           { model | seconds = clamp 0 900 (model.seconds - 1) }
   in
-    case action of
+    case message of
       Tick -> ( decrementWhenNotPaused , playBeepIfZero )
-      Noop -> ( model, Effects.none )
-      TogglePause -> ( { model | isPaused = not model.isPaused } , Effects.none )
+      Noop -> ( model, Cmd.none )
+      TogglePause -> ( { model | isPaused = not model.isPaused } , Cmd.none )
 
 
 ---- VIEW ----
 
-view : Signal.Address Action -> Model -> Html
-view address model =
+view : Model -> Html Message
+view model =
   div []
     [ h1 [] [ text "Poker Clock" ]
     , h2 [] [ text (formatTime model.seconds) ]
-    , button [ onClick address TogglePause ] [ text <| if model.isPaused then "Play" else "Pause" ]
+    , button [ onClick TogglePause ] [ text <| if model.isPaused then "Play" else "Pause" ]
     ]
 
 
@@ -69,45 +68,17 @@ formatTime seconds =
 
 ---- INPUTS ----
 
-inputs : List (Signal Action)
-inputs =
-  [ Signal.map (always Tick) (every second) ]
-
+subscriptions : Model -> Sub Message
+subscriptions _ =
+  every second (always Tick)
 
 
 ---- OUTPUTS ----
 
-port playBeep : Signal Bool
-port playBeep =
-  playBeepMailbox.signal
-
-
-playBeepMailbox : Signal.Mailbox Bool
-playBeepMailbox =
-  Signal.mailbox False
-
-
-playBeepTask : Task x ()
-playBeepTask =
-  Signal.send playBeepMailbox.address True
-
-
-playBeepEffect : Effects Action
-playBeepEffect =
-  Effects.map (always Noop) (Effects.task playBeepTask)
+port playBeep : Bool -> Cmd message
 
 
 ---- APP ----
 
-app : StartApp.App Model
-app =
-  StartApp.start { init = init, view = view, update = update, inputs = inputs }
-
-
-main : Signal Html
 main =
-  app.html
-
-
-port tasks : Signal (Task Effects.Never ())
-port tasks = app.tasks
+  Html.program { init = init, view = view, update = update, subscriptions = subscriptions }

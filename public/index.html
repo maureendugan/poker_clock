@@ -3,7 +3,7 @@
 <script src="PokerClock.js"></script>
 <script>
 var div = document.getElementById('poker_clock');
-var app = Elm.embed(Elm.PokerClock, div);
+var app = Elm.PokerClock.embed(div);
 
 app.ports.playBeep.subscribe(function(shouldPlay) {
   if (shouldPlay) {
