@@ -1,18 +1,30 @@
 <div id="poker_clock"></div>
+<audio id="times-up" src="beep.mp3"></audio>
 
+<script src="NoSleep.js"></script>
 <script src="PokerClock.js"></script>
 <script>
 var div = document.getElementById('poker_clock');
 var app = Elm.PokerClock.embed(div);
+var sound = document.getElementById('times-up');
 
 app.ports.playBeep.subscribe(function(shouldPlay) {
   if (shouldPlay) {
-    document.getElementById('times-up').play();
+    sound.play();
   } else {
-    document.getElementById('times-up').stop();
+    sound.pause();
   }
 });
 
+// for security reasons, noSleep and audio elements must be activated by a user input event :(
+var boot = function() {
+  var noSleep = new NoSleep();
+  noSleep.enable();
+
+  sound.play();
+  sound.pause();
+  document.removeEventListener('touchstart', boot, false);
+}
+document.addEventListener('touchstart', boot, false);
 </script>
 
-<audio id="times-up" src="beep.mp3"></audio>

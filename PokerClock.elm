@@ -18,7 +18,7 @@ type alias Model =
 
 init : ( Model, Cmd Message )
 init =
-  ( Model 900 False, Cmd.none )
+  ( Model 900 True, Cmd.none )
 
 
 ---- UPDATE ----
