@@ -1,6 +1,7 @@
 port module PokerClock exposing (..)
 
 import Html exposing (..)
+import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
 import Html.App as Html
 import String exposing (padLeft)
@@ -54,7 +55,7 @@ view model =
   div []
     [ h1 [] [ text "Poker Clock" ]
     , h2 [] [ text (formatTime model.seconds) ]
-    , button [ onClick TogglePause ] [ text <| if model.isPaused then "Play" else "Pause" ]
+    , button [ onClick TogglePause, class (if model.seconds == 0 then "hidden" else "") ] [ text <| if model.isPaused then "Play" else "Pause" ]
     , button [ onClick RestartClock ] [ text "Restart" ]
     ]
 
