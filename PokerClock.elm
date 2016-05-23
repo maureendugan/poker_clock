@@ -43,7 +43,7 @@ update message model =
     case message of
       Tick -> ( decrementWhenNotPaused , playBeepIfZero )
       Noop -> ( model, Cmd.none )
-      TogglePause -> ( { model | isPaused = not model.isPaused } , Cmd.none )
+      TogglePause -> ( { model | isPaused = not model.isPaused } , playBeep False )
 
 
 ---- VIEW ----
