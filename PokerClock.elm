@@ -1,6 +1,7 @@
 port module PokerClock exposing (..)
 
 import Html exposing (..)
+import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
 import Html.App as Html
 import String exposing (padLeft)
@@ -23,7 +24,7 @@ init =
 
 ---- UPDATE ----
 
-type Message = Tick | Noop | TogglePause
+type Message = Tick | Noop | TogglePause | RestartClock
 
 
 update : Message -> Model -> ( Model, Cmd Message )
@@ -41,20 +42,28 @@ update message model =
           { model | seconds = clamp 0 900 (model.seconds - 1) }
   in
     case message of
-      Tick -> ( decrementWhenNotPaused , playBeepIfZero )
+      Tick -> ( decrementWhenNotPaused, playBeepIfZero )
       Noop -> ( model, Cmd.none )
-      TogglePause -> ( { model | isPaused = not model.isPaused } , playBeep False )
+      TogglePause -> ( { model | isPaused = not model.isPaused }, playBeep False )
+      RestartClock -> ( { model | seconds = 900, isPaused = False }, playBeep False )
 
 
 ---- VIEW ----
 
 view : Model -> Html Message
 view model =
-  div []
-    [ h1 [] [ text "Poker Clock" ]
-    , h2 [] [ text (formatTime model.seconds) ]
-    , button [ onClick TogglePause ] [ text <| if model.isPaused then "Play" else "Pause" ]
-    ]
+  let
+    hidePlayPause =
+      if model.seconds == 0 then "hidden" else ""
+    playOrPause =
+      if model.isPaused then "Play" else "Pause"
+  in
+    div []
+      [ h1 [] [ text "Poker Clock" ]
+      , h2 [] [ text (formatTime model.seconds) ]
+      , button [ onClick TogglePause, class hidePlayPause ] [ text playOrPause ]
+      , button [ onClick RestartClock ] [ text "Restart" ]
+      ]
 
 
 formatTime : Int -> String
