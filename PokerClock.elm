@@ -52,12 +52,18 @@ update message model =
 
 view : Model -> Html Message
 view model =
-  div []
-    [ h1 [] [ text "Poker Clock" ]
-    , h2 [] [ text (formatTime model.seconds) ]
-    , button [ onClick TogglePause, class (if model.seconds == 0 then "hidden" else "") ] [ text <| if model.isPaused then "Play" else "Pause" ]
-    , button [ onClick RestartClock ] [ text "Restart" ]
-    ]
+  let
+    hidePlayPause =
+      if model.seconds == 0 then "hidden" else ""
+    playOrPause =
+      if model.isPaused then "Play" else "Pause"
+  in
+    div []
+      [ h1 [] [ text "Poker Clock" ]
+      , h2 [] [ text (formatTime model.seconds) ]
+      , button [ onClick TogglePause, class hidePlayPause ] [ text playOrPause ]
+      , button [ onClick RestartClock ] [ text "Restart" ]
+      ]
 
 
 formatTime : Int -> String
