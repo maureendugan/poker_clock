@@ -2,7 +2,7 @@ default:
 	bin/elm-make PokerClock.elm --yes --output public/PokerClock.js
 
 deploy:
-	bin/firebase deploy
+	make &&	bin/firebase deploy
 
 setup:
 	npm install
