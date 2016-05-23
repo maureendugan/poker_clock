@@ -23,7 +23,7 @@ init =
 
 ---- UPDATE ----
 
-type Message = Tick | Noop | TogglePause
+type Message = Tick | Noop | TogglePause | RestartClock
 
 
 update : Message -> Model -> ( Model, Cmd Message )
@@ -41,9 +41,10 @@ update message model =
           { model | seconds = clamp 0 900 (model.seconds - 1) }
   in
     case message of
-      Tick -> ( decrementWhenNotPaused , playBeepIfZero )
+      Tick -> ( decrementWhenNotPaused, playBeepIfZero )
       Noop -> ( model, Cmd.none )
-      TogglePause -> ( { model | isPaused = not model.isPaused } , playBeep False )
+      TogglePause -> ( { model | isPaused = not model.isPaused }, playBeep False )
+      RestartClock -> ( { model | seconds = 900, isPaused = False }, playBeep False )
 
 
 ---- VIEW ----
@@ -54,6 +55,7 @@ view model =
     [ h1 [] [ text "Poker Clock" ]
     , h2 [] [ text (formatTime model.seconds) ]
     , button [ onClick TogglePause ] [ text <| if model.isPaused then "Play" else "Pause" ]
+    , button [ onClick RestartClock ] [ text "Restart" ]
     ]
 
 
